@@ -8,6 +8,20 @@ containerGallery.insertAdjacentHTML("beforeend", galleryMarcup);
 
 containerGallery.addEventListener("click", onClickImageOpenModal);
 
+const instance = basicLightbox.create(
+  `
+  <img src='' width="800" height="600">
+`,
+  {
+    onShow: () => {
+      window.addEventListener("keydown", onPressKey);
+    },
+    onClose: () => {
+      window.removeEventListener("keydown", onPressKey);
+    },
+  }
+);
+
 function onClickImageOpenModal(event) {
   event.preventDefault();
   if (event.target.nodeName !== "IMG") return;
@@ -16,26 +30,14 @@ function onClickImageOpenModal(event) {
 
 function showModal(event) {
   const originalImage = event.target.dataset.source;
-  const instance = basicLightbox.create(
-    `
-    <img src=${originalImage} width="800" height="600">
-`,
-    {
-      onShow: () => {
-        window.addEventListener("keydown", onPressKey);
-      },
-      onClose: () => {
-        window.removeEventListener("keydown", onPressKey);
-      },
-    }
-  );
-
+  instance.element().querySelector("img").src = originalImage;
   instance.show();
+}
 
-  function onPressKey(event) {
-    if (event.code === "Escape") {
-      instance.close();
-    }
+function onPressKey(event) {
+  if (event.code === "Escape") {
+    instance.close();
+    return;
   }
 }
 
